@@ -961,8 +961,7 @@ man_MANS = doc/as.1
 info_TEXINFOS = doc/as.texi
 doc_as_TEXINFOS = doc/asconfig.texi $(CPU_DOCS)
 AM_MAKEINFOFLAGS = -I "$(srcdir)/doc" -I doc -I "$(srcdir)/../libiberty" \
-		   -I "$(srcdir)/../bfd/doc" -I ../bfd/doc \
-		   --no-split
+		   -I "$(srcdir)/../bfd/doc" -I ../bfd/doc
 
 TEXI2DVI = texi2dvi -I "$(srcdir)/doc" -I doc -I "$(srcdir)/../libiberty" \
 		   -I "$(srcdir)/../bfd/doc" -I ../bfd/doc
