@@ -876,8 +876,7 @@ man_MANS = \
 info_TEXINFOS = doc/binutils.texi
 binutils_TEXI = $(srcdir)/doc/binutils.texi
 AM_MAKEINFOFLAGS = -I "$(srcdir)/doc" -I "$(top_srcdir)/../libiberty" \
-		   -I "$(top_srcdir)/../bfd/doc" -I ../bfd/doc \
-		   --no-split
+		   -I "$(top_srcdir)/../bfd/doc" -I ../bfd/doc
 
 TEXI2DVI = texi2dvi -I "$(srcdir)/doc" -I "$(top_srcdir)/../libiberty" \
 		    -I "$(top_srcdir)/../bfd/doc" -I ../bfd/doc

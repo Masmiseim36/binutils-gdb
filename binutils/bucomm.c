@@ -534,6 +534,61 @@ template_in_dir (const char *path)
 #undef template
 }
 
+#if defined (_WIN32) && !defined (__CYGWIN32__)
+
+/*
+ * Workaround mingw mkstemp producing duplicate filenames when cross-compiled
+ * on Linux.
+ */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <io.h>
+#include <errno.h>
+#include <share.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+
+static int mingw_mkstemp (char *template_name)
+{
+    int i, j, fd, len, index;
+
+    /* These are the (62) characters used in temporary filenames. */
+    static const char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    /* The last six characters of template must be "XXXXXX" */
+    if (template_name == NULL || (len = strlen (template_name)) < 6
+            || memcmp (template_name + (len - 6), "XXXXXX", 6)) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    /* User may supply more than six trailing Xs */
+    for (index = len - 6; index > 0 && template_name[index - 1] == 'X'; index--);
+
+    /*
+        Like OpenBSD, mkstemp() will try at least 2 ** 31 combinations before
+        giving up.
+     */
+    for (i = 0; i >= 0; i++) {
+        for(j = index; j < len; j++) {
+            template_name[j] = letters[rand () % 62];
+        }
+        fd = _sopen(template_name,
+                _O_RDWR | _O_CREAT | _O_EXCL | _O_BINARY,
+                _SH_DENYRW, _S_IREAD | _S_IWRITE);
+        if (fd != -1) return fd;
+        if (fd == -1 && errno != EEXIST && errno != EACCES) return -1;
+    }
+
+    return -1;
+}
+
+#define mkstemp mingw_mkstemp
+
+#endif
+
 /* Return the name of a created temporary file in the same directory
    as FILENAME.  */
 
